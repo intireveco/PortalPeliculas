@@ -1,0 +1,174 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<style>
+    .search-box {
+        background: #1f1f1f;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        color: #fff;
+    }
+    .input-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    .input-group input {
+        padding: 10px;
+        width: 300px;
+        border-radius: 4px;
+        border: 1px solid #444;
+    }
+    .btn-search {
+        padding: 10px 20px;
+        background: #e50914;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    /* Previsualización */
+    #preview-card {
+        display: none;
+        background: #2b2b2b;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 20px;
+        color: white;
+        max-width: 600px;
+    }
+    .preview-content {
+        display: flex;
+        gap: 20px;
+    }
+    .preview-poster {
+        width: 120px;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 6px;
+    }
+    .preview-details {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        flex-grow: 1;
+    }
+    .form-group select {
+        padding: 8px;
+        border-radius: 4px;
+        width: 100%;
+        margin-top: 5px;
+    }
+    .btn-save {
+        padding: 10px;
+        background: #2ecc71;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="search-box">
+    <h2>🔍 Buscar Película en OMDb API</h2>
+    <p>Ingresa el nombre de la película para consultar sus datos antes de guardar.</p>
+    
+    <div class="input-group">
+        <input type="text" id="movie-title" placeholder="Ej: Inception, Avatar, Titanic...">
+        <button type="button" class="btn-search" onclick="searchMovie()">Buscar</button>
+    </div>
+</div>
+
+<div id="loading" style="display: none; color: white;">Cargando información...</div>
+<div id="error-message" style="display: none; color: #e74c3c; margin-top: 10px;"></div>
+
+<!-- Tarjeta de Previsualización y Confirmación -->
+<div id="preview-card">
+    <h3>Información Encontrada</h3>
+    <hr style="border-color: #444; margin: 10px 0;">
+    
+    <form method="POST">
+        {% csrf_token %}
+        <div class="preview-content">
+            <img id="img-poster" class="preview-poster" src="" alt="Póster">
+            
+            <div class="preview-details">
+                <h3 id="display-title" style="color: #f1c40f;"></h3>
+                <p><strong>Director:</strong> <span id="display-director"></span></p>
+                <p><strong>Año:</strong> <span id="display-year"></span></p>
+                
+                <!-- Campos ocultos para enviar al backend al guardar -->
+                <input type="hidden" name="titulo" id="input-title">
+                <input type="hidden" name="director" id="input-director">
+                <input type="hidden" name="anio" id="input-year">
+                <input type="hidden" name="poster_url" id="input-poster">
+
+                <div class="form-group">
+                    <label for="estado"><strong>Asignar Estado de Visualización:</strong></label>
+                    <select name="estado" id="estado" required>
+                        <option value="PENDIENTE">❌ Pendiente</option>
+                        <option value="PROGRESO">⏳ En progreso</option>
+                        <option value="VISTA">✓ Ya la vi completa</option>
+                    </select>
+                </div>
+
+                <button type="submit" name="guardar_pelicula" class="btn-save">Confirmar y Guardar Película</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+async function searchMovie() {
+    const title = document.getElementById('movie-title').value;
+    const loading = document.getElementById('loading');
+    const errorMsg = document.getElementById('error-message');
+    const previewCard = document.getElementById('preview-card');
+
+    if (!title) return;
+
+    loading.style.display = 'block';
+    errorMsg.style.display = 'none';
+    previewCard.style.display = 'none';
+
+    // OMDb API key de pruebas
+    const apiKey = 'trilogy';
+    const url = `https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${apiKey}`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        loading.style.display = 'none';
+
+        if (data.Response === 'True') {
+            // Llenar vista previa
+            document.getElementById('display-title').textContent = data.Title;
+            document.getElementById('display-director').textContent = data.Director;
+            document.getElementById('display-year').textContent = data.Year;
+            document.getElementById('img-poster').src = data.Poster !== 'N/A' ? data.Poster : 'https://via.placeholder.com/120x180?text=Sin+Imagen';
+
+            // Llenar inputs ocultos del formulario
+            document.getElementById('input-title').value = data.Title;
+            document.getElementById('input-director').value = data.Director;
+            document.getElementById('input-year').value = data.Year;
+            document.getElementById('input-poster').value = data.Poster;
+
+            previewCard.style.display = 'block';
+        } else {
+            errorMsg.textContent = 'No se encontró la película. Intenta con otro nombre.';
+            errorMsg.style.display = 'block';
+        }
+    } catch (err) {
+        loading.style.display = 'none';
+        errorMsg.textContent = 'Error al conectar con el servidor de la API.';
+        errorMsg.style.display = 'block';
+    }
+}
+</script>
+{% endblock %}
