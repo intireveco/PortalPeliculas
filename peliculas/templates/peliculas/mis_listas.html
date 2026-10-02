@@ -15,6 +15,7 @@
             <small>{{ lista.peliculas.count }} película{{ lista.peliculas.count|pluralize }}</small>
         </div>
         <div>
+            <a class="boton" href="{% url 'editar_lista' lista.pk %}">Editar</a>
         </div>
     </div>
 {% empty %}
