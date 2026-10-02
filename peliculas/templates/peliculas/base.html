@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block titulo %}Portal de Películas{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'peliculas/estilos.css' %}">
+</head>
+<body>
+    <header class="barra">
+        <a class="logo" href="{% url 'catalogo' %}">🎬 PortalPelis</a>
+        <nav class="menu">
+            <a href="{% url 'catalogo' %}">Catálogo</a>
+            {% if user.is_authenticated %}
+                {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin</a>{% endif %}
+                {# Desde Django 5 el logout debe ser POST: por eso es un formulario #}
+                <form method="post" action="{% url 'logout' %}" class="en-linea">
+                    {% csrf_token %}
+                    <button type="submit" class="boton-link">Salir ({{ user.username }})</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Ingresar</a>
+                <a href="{% url 'registro' %}" class="boton">Registrarse</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main class="contenido">
+        {% if messages %}
+            {% for mensaje in messages %}
+                <div class="mensaje mensaje-{{ mensaje.tags }}">{{ mensaje }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% block contenido %}{% endblock %}
+    </main>
+
+    <footer class="pie">Portal de Películas · Programación Back End TI3V41</footer>
+</body>
+</html>
