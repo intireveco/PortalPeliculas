@@ -1,0 +1,14 @@
+{% extends 'peliculas/base.html' %}
+{% block titulo %}Eliminar lista · Portal de Películas{% endblock %}
+
+{% block contenido %}
+<div class="caja-formulario">
+    <h1>¿Eliminar la lista "{{ lista.nombre }}"?</h1>
+    <p>Esta acción no se puede deshacer. Las películas NO se borran, solo la lista.</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="boton boton-peligro">Sí, eliminar</button>
+        <a href="{% url 'mis_listas' %}">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
