@@ -1,120 +1,187 @@
-import logging
-
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator
-from django.db import DatabaseError, IntegrityError
-from django.db.models import Max
+from django.db import DatabaseError
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
-from .forms import CalificacionForm, RegistroForm, VisualizacionForm
-from .models import Calificacion, HistorialVisualizacion, Pelicula
-
-logger = logging.getLogger(__name__)
+from .forms import CalificacionForm, ListaForm, VisualizacionForm
+from .models import Calificacion, ListaPersonalizada, Pelicula
 
 
-# =====================================================================
-# Funciones de ayuda (no son vistas)
-# =====================================================================
-def estados_del_usuario(usuario):
-    """Devuelve {id_pelicula: 'VISTA' o 'PROGRESO'} según el historial del usuario."""
-    if not usuario.is_authenticated:
-        return {}
-    maximos = (HistorialVisualizacion.objects.filter(usuario=usuario)
-               .values('pelicula_id').annotate(maximo=Max('porcentaje_visto')))
-    return {fila['pelicula_id']: 'VISTA' if fila['maximo'] >= 90 else 'PROGRESO' for fila in maximos}
+# ---------------------------------------------------------------
+# READ: catálogo de películas con paginación (8 por página)
+# ---------------------------------------------------------------
+def catalogo(request):
+    peliculas = Pelicula.objects.select_related('director').all()
+    paginador = Paginator(peliculas, 8)
+    pagina = paginador.get_page(request.GET.get('page'))
+    return render(request, 'peliculas/catalogo.html', {'pagina': pagina})
 
 
-# =====================================================================
-# Historial de visualización ("play")
-# =====================================================================
-@login_required   # si no ha iniciado sesión, lo manda al login
-@require_POST     # solo acepta envíos de formulario (POST), no visitas directas (GET)
-def registrar_visualizacion(request, pk):
-    pelicula = get_object_or_404(Pelicula, pk=pk)
-    form = VisualizacionForm(request.POST, pelicula=pelicula)
+# ---------------------------------------------------------------
+# Registro de usuarios nuevos (login y logout los da Django)
+# ---------------------------------------------------------------
+def registro(request):
+    if request.user.is_authenticated:
+        return redirect('catalogo')
 
-    if form.is_valid():
-        try:
-            registro = form.save(commit=False)   # aún no se guarda...
-            registro.usuario = request.user      # ...el dueño lo pone el servidor, no el formulario
-            registro.pelicula = pelicula
-            registro.save()
-
-            messages.success(
-                request,
-                f'Visualización registrada ({registro.porcentaje_visto}% visto).'
-            )
-
-        except DatabaseError:
-            logger.exception('Error al registrar visualización')
-            messages.error(request, 'No se pudo registrar la visualización.')
-
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            usuario = form.save()
+            login(request, usuario)  # entra automáticamente
+            messages.success(request, f'¡Bienvenido/a, {usuario.username}!')
+            return redirect('catalogo')
     else:
-        for error in form.errors.get('minutos_visto', []):
-            messages.error(request, error)
-
-    return redirect('pelicula_detalle', pk=pk)
+        form = UserCreationForm()
+    return render(request, 'registration/registro.html', {'form': form})
 
 
-@login_required
-def mi_historial(request):
-    # request.user.historial = SOLO el historial del usuario conectado
-    historial = request.user.historial.select_related('pelicula')
-    pagina = Paginator(historial, 20).get_page(request.GET.get('page'))
+# ---------------------------------------------------------------
+# Detalle de una película: datos, calificaciones y recomendaciones
+# ---------------------------------------------------------------
+def detalle_pelicula(request, pk):
+    pelicula = get_object_or_404(Pelicula.objects.select_related('director'), pk=pk)
+    calificaciones = pelicula.calificaciones.select_related('usuario')
+    # Recomendación: otras películas del mismo director
+    mas_del_director = pelicula.director.peliculas.exclude(pk=pelicula.pk)[:4]
 
-    return render(
-        request,
-        'peliculas/historial.html',
-        {'pagina': pagina}
-    )
-    
-# =====================================================================
-# Calificaciones: cada usuario crea/edita/borra SOLO las suyas
-# =====================================================================
+    mi_calificacion = None
+    if request.user.is_authenticated:
+        mi_calificacion = calificaciones.filter(usuario=request.user).first()
+
+    contexto = {
+        'pelicula': pelicula,
+        'calificaciones': calificaciones,
+        'mas_del_director': mas_del_director,
+        'mi_calificacion': mi_calificacion,
+        'form_calificacion': CalificacionForm(instance=mi_calificacion),  # precargado si ya calificó
+    }
+    return render(request, 'peliculas/detalle.html', contexto)
+
+
 @login_required
 @require_POST
 def calificar(request, pk):
     pelicula = get_object_or_404(Pelicula, pk=pk)
-    form = CalificacionForm(request.POST)
+    # Si ya había calificado, la editamos; si no, se crea una nueva
+    mi_calificacion = Calificacion.objects.filter(usuario=request.user, pelicula=pelicula).first()
+    form = CalificacionForm(request.POST, instance=mi_calificacion)
+
     if form.is_valid():
         try:
             calificacion = form.save(commit=False)
             calificacion.usuario = request.user
             calificacion.pelicula = pelicula
-            calificacion.save()   # la señal del Paso 6 recalcula el promedio
-            messages.success(request, '¡Gracias por calificar!')
-        except IntegrityError:
-            # La UniqueConstraint del modelo impide calificar 2 veces la misma película
-            messages.warning(request, 'Ya calificaste esta película. Puedes editar tu calificación.')
+            calificacion.save()  # aquí se recalcula el promedio (ver models.py)
+            messages.success(request, 'Tu calificación fue guardada.')
+        except DatabaseError:
+            messages.error(request, 'No se pudo guardar la calificación. Intenta de nuevo.')
     else:
-        messages.error(request, 'Elige una puntuación entre 1 y 5.')
-    return redirect('pelicula_detalle', pk=pk)
+        messages.error(request, 'Revisa tu calificación: debe ser de 1 a 5 estrellas y el comentario máximo 500 caracteres.')
+    return redirect('detalle_pelicula', pk=pk)
 
 
 @login_required
-def calificacion_editar(request, pk):
-    # Filtrar por usuario=request.user: si la calificación es de otro usuario, responde 404
-    calificacion = get_object_or_404(Calificacion, pk=pk, usuario=request.user)
-    form = CalificacionForm(request.POST or None, instance=calificacion)
-    if request.method == 'POST' and form.is_valid():
-        form.save()
-        messages.success(request, 'Calificación actualizada.')
-        return redirect('pelicula_detalle', pk=calificacion.pelicula_id)
-    return render(request, 'peliculas/formulario.html', {
-        'form': form, 'titulo': f'Editar calificación de «{calificacion.pelicula.titulo}»'})
+@require_POST
+def eliminar_calificacion(request, pk):
+    # Solo encuentra la calificación si es DEL usuario conectado
+    calificacion = get_object_or_404(Calificacion, pelicula_id=pk, usuario=request.user)
+    calificacion.delete()
+    messages.success(request, 'Tu calificación fue eliminada.')
+    return redirect('detalle_pelicula', pk=pk)
 
 
 @login_required
-def calificacion_eliminar(request, pk):
-    calificacion = get_object_or_404(Calificacion, pk=pk, usuario=request.user)
+@require_POST
+def registrar_visualizacion(request, pk):
+    pelicula = get_object_or_404(Pelicula, pk=pk)
+    form = VisualizacionForm(request.POST)
+    form.instance.usuario = request.user
+    form.instance.pelicula = pelicula
+
+    if form.is_valid():
+        try:
+            registro_visto = form.save()  # aquí también suma 1 visualización (ver models.py)
+            messages.success(request, f'Guardamos que viste el {registro_visto.porcentaje_visto}% de la película.')
+        except DatabaseError:
+            messages.error(request, 'No se pudo guardar en tu historial. Intenta de nuevo.')
+    else:
+        for error in form.errors.get('minutos_visto', []):
+            messages.error(request, error)
+    return redirect('detalle_pelicula', pk=pk)
+
+
+@login_required
+def historial(request):
+    registros = request.user.historial.select_related('pelicula')
+
+    # Recomendaciones: películas de directores que ya vio y que aún no ha visto
+    vistas = Pelicula.objects.filter(historial__usuario=request.user)
+    recomendadas = (Pelicula.objects
+                    .filter(director__in=vistas.values('director'))
+                    .exclude(pk__in=vistas.values('pk'))
+                    .distinct()[:6])
+
+    return render(request, 'peliculas/historial.html', {
+        'registros': registros,
+        'recomendadas': recomendadas,
+    })
+
+
+# ---------------------------------------------------------------
+# CRUD de listas personalizadas (cada usuario solo maneja las suyas)
+# ---------------------------------------------------------------
+@login_required
+def mis_listas(request):
+    # READ: solo las listas del usuario conectado
+    listas = request.user.listas.all()
+    return render(request, 'peliculas/mis_listas.html', {'listas': listas})
+
+
+@login_required
+def crear_lista(request):
+    # CREATE: el formulario parte vacío
     if request.method == 'POST':
-        pelicula_id = calificacion.pelicula_id
-        calificacion.delete()
-        messages.success(request, 'Calificación eliminada.')
-        return redirect('pelicula_detalle', pk=pelicula_id)
-    return render(request, 'peliculas/confirmar_eliminar.html', {
-        'objeto': calificacion, 'volver': calificacion.pelicula.get_absolute_url()})
+        form = ListaForm(request.POST)
+        form.instance.usuario = request.user  # el dueño es quien está conectado
+        if form.is_valid():
+            try:
+                lista = form.save()
+                messages.success(request, f'Lista "{lista.nombre}" creada.')
+                return redirect('ver_lista', pk=lista.pk)
+            except DatabaseError:
+                messages.error(request, 'No se pudo crear la lista. Intenta de nuevo.')
+    else:
+        form = ListaForm()
+    return render(request, 'peliculas/lista_form.html', {'form': form, 'titulo': 'Nueva lista'})
 
+
+def ver_lista(request, pk):
+    lista = get_object_or_404(ListaPersonalizada, pk=pk)
+    # Una lista privada solo la puede ver su dueño
+    if not lista.publica and lista.usuario != request.user:
+        raise Http404('Esta lista es privada.')
+    return render(request, 'peliculas/lista_detalle.html', {'lista': lista})
+
+
+@login_required
+def editar_lista(request, pk):
+    # UPDATE: buscamos la lista Y comprobamos que sea del usuario
+    lista = get_object_or_404(ListaPersonalizada, pk=pk, usuario=request.user)
+    if request.method == 'POST':
+        form = ListaForm(request.POST, instance=lista)  # instance = editar la existente
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, f'Lista "{lista.nombre}" actualizada.')
+                return redirect('ver_lista', pk=lista.pk)
+            except DatabaseError:
+                messages.error(request, 'No se pudo actualizar la lista. Intenta de nuevo.')
+    else:
+        form = ListaForm(instance=lista)  # formulario precargado con los datos actuales
+    return render(request, 'peliculas/lista_form.html', {'form': form, 'titulo': 'Editar lista'})
