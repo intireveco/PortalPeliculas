@@ -23,4 +23,6 @@ urlpatterns = [
     path('listas/nueva/', views.crear_lista, name='crear_lista'),
     path('listas/<int:pk>/', views.ver_lista, name='ver_lista'),
     path('listas/<int:pk>/editar/', views.editar_lista, name='editar_lista'),
+    path('listas/<int:pk>/eliminar/', views.eliminar_lista, name='eliminar_lista'),
+    path('listas/publicas/', views.listas_publicas, name='listas_publicas'),
 ]
