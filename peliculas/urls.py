@@ -17,4 +17,12 @@ urlpatterns = [
     path('pelicula/<int:pk>/calificacion/eliminar/', views.eliminar_calificacion, name='eliminar_calificacion'),
     path('pelicula/<int:pk>/ver/', views.registrar_visualizacion, name='registrar_visualizacion'),
     path('historial/', views.historial, name='historial'),
+
+    # Listas personalizadas (CRUD)
+    path('listas/', views.mis_listas, name='mis_listas'),
+    path('listas/nueva/', views.crear_lista, name='crear_lista'),
+    path('listas/<int:pk>/', views.ver_lista, name='ver_lista'),
+    path('listas/<int:pk>/editar/', views.editar_lista, name='editar_lista'),
+    path('listas/<int:pk>/eliminar/', views.eliminar_lista, name='eliminar_lista'),
+    path('listas/publicas/', views.listas_publicas, name='listas_publicas'),
 ]
