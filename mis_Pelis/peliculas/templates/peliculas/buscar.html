@@ -1,0 +1,26 @@
+{% extends 'peliculas/base.html' %}
+{% block titulo %}Buscar · Portal de Películas{% endblock %}
+
+{% block contenido %}
+<h1>Búsqueda avanzada</h1>
+<form method="get" class="caja filtros">
+    <input type="text" name="q" value="{{ q }}" placeholder="Título, director o actor">
+    <select name="genero">
+        <option value="">Todos los géneros</option>
+        {% for valor, nombre in generos %}
+            <option value="{{ valor }}" {% if valor == genero %}selected{% endif %}>{{ nombre }}</option>
+        {% endfor %}
+    </select>
+    <input type="number" name="anio" value="{{ anio }}" placeholder="Año" min="1888" max="2100">
+    <button type="submit" class="boton">Filtrar</button>
+</form>
+
+<p>{{ resultados|length }} resultado{{ resultados|length|pluralize }}</p>
+<div class="grilla">
+    {% for pelicula in resultados %}
+        {% include 'peliculas/_tarjeta.html' %}
+    {% empty %}
+        <p>No encontramos películas con esos filtros.</p>
+    {% endfor %}
+</div>
+{% endblock %}

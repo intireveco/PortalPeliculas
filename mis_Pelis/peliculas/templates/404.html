@@ -1,0 +1,10 @@
+{% extends 'peliculas/base.html' %}
+{% block titulo %}Página no encontrada · Portal de Películas{% endblock %}
+
+{% block contenido %}
+<div class="caja-formulario">
+    <h1>Página no encontrada (404)</h1>
+    <p>La página que buscas no existe o no tienes permiso para verla.</p>
+    <a class="boton" href="{% url 'catalogo' %}">Volver al catálogo</a>
+</div>
+{% endblock %}

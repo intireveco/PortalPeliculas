@@ -1,0 +1,30 @@
+{% extends 'peliculas/base.html' %}
+{% block titulo %}Top 10 · Portal de Películas{% endblock %}
+
+{% block contenido %}
+<h1>Top 10</h1>
+<div class="dos-columnas">
+    <section>
+        <h2>Histórico</h2>
+        <ol class="ranking">
+            {% for pelicula in top_historico %}
+                <li><a href="{% url 'detalle_pelicula' pelicula.pk %}">{{ pelicula.titulo }}</a>
+                    — ★ {{ pelicula.calificacion_promedio|floatformat:1 }} ({{ pelicula.votos }} voto{{ pelicula.votos|pluralize }})</li>
+            {% empty %}
+                <li>Aún no hay calificaciones.</li>
+            {% endfor %}
+        </ol>
+    </section>
+    <section>
+        <h2>Últimos 30 días</h2>
+        <ol class="ranking">
+            {% for pelicula in top_mes %}
+                <li><a href="{% url 'detalle_pelicula' pelicula.pk %}">{{ pelicula.titulo }}</a>
+                    — ★ {{ pelicula.promedio_mes|floatformat:1 }} ({{ pelicula.votos }} voto{{ pelicula.votos|pluralize }})</li>
+            {% empty %}
+                <li>No hubo calificaciones este mes.</li>
+            {% endfor %}
+        </ol>
+    </section>
+</div>
+{% endblock %}

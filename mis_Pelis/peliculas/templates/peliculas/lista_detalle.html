@@ -1,0 +1,23 @@
+{% extends 'peliculas/base.html' %}
+{% block titulo %}{{ lista.nombre }} · Portal de Películas{% endblock %}
+
+{% block contenido %}
+<div class="titulo-con-boton">
+    <h1>{{ lista.nombre }}</h1>
+    {% if lista.usuario == user %}
+        <div>
+            <a class="boton" href="{% url 'editar_lista' lista.pk %}">Editar</a>
+            <a class="boton boton-peligro" href="{% url 'eliminar_lista' lista.pk %}">Eliminar</a>
+        </div>
+    {% endif %}
+</div>
+<p>De <strong>{{ lista.usuario.username }}</strong> · <span class="etiqueta">{% if lista.publica %}Pública{% else %}Privada{% endif %}</span></p>
+
+<div class="grilla">
+    {% for pelicula in lista.peliculas.all %}
+        {% include 'peliculas/_tarjeta.html' %}
+    {% empty %}
+        <p>Esta lista no tiene películas.</p>
+    {% endfor %}
+</div>
+{% endblock %}

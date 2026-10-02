@@ -1,0 +1,41 @@
+{% extends "admin/base_site.html" %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">Inicio</a> ›
+    <a href="{% url 'admin:peliculas_pelicula_changelist' %}">Películas</a> ›
+    Importar desde OMDb
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Importar película desde OMDb</h1>
+
+{# Paso 1: buscar (GET, no guarda nada) #}
+<form method="get" style="margin-bottom: 20px;">
+    <input type="text" name="titulo" value="{{ titulo }}" placeholder="Título en inglés, ej: Inception" required>
+    <input type="number" name="anio" value="{{ anio }}" placeholder="Año (opcional)" min="1888" max="2100">
+    <input type="submit" value="Buscar en OMDb">
+</form>
+
+{# Paso 2: vista previa y confirmar (POST, guarda en Supabase) #}
+{% if resultado %}
+<div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    {% if resultado.Poster and resultado.Poster != "N/A" %}
+        <img src="{{ resultado.Poster }}" alt="Póster" style="max-width: 180px;">
+    {% endif %}
+    <div>
+        <h2>{{ resultado.Title }} ({{ resultado.Year }})</h2>
+        <p><strong>Director:</strong> {{ resultado.Director }}</p>
+        <p><strong>Género:</strong> {{ resultado.Genre }} · <strong>Duración:</strong> {{ resultado.Runtime }}</p>
+        <p><strong>Actores:</strong> {{ resultado.Actors }}</p>
+        <p>{{ resultado.Plot }}</p>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="imdb_id" value="{{ resultado.imdbID }}">
+            <input type="submit" class="default" value="Importar al catálogo">
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

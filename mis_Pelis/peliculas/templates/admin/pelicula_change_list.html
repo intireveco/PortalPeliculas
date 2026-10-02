@@ -1,10 +1,7 @@
 {% extends "admin/change_list.html" %}
 
+{# Agrega un botón arriba a la derecha de la lista de películas del admin #}
 {% block object-tools-items %}
-    <li>
-        <a href="{% url 'admin:buscar_pelicula_api' %}" class="addlink" style="background-color: #e50914; color: white;">
-            🔍 Buscar e Importar desde API
-        </a>
-    </li>
+    <li><a href="{% url 'admin:peliculas_importar_omdb' %}" class="addlink">Importar desde OMDb</a></li>
     {{ block.super }}
 {% endblock %}

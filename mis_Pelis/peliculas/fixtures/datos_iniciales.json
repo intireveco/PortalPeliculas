@@ -1,0 +1,287 @@
+[
+  {
+    "model": "peliculas.director",
+    "pk": 1,
+    "fields": {
+      "nombre": "Christopher Nolan",
+      "nacionalidad": "Británica",
+      "fecha_nacimiento": "1970-07-30"
+    }
+  },
+  {
+    "model": "peliculas.director",
+    "pk": 2,
+    "fields": {
+      "nombre": "Hayao Miyazaki",
+      "nacionalidad": "Japonesa",
+      "fecha_nacimiento": "1941-01-05"
+    }
+  },
+  {
+    "model": "peliculas.director",
+    "pk": 3,
+    "fields": {
+      "nombre": "Bong Joon-ho",
+      "nacionalidad": "Surcoreana",
+      "fecha_nacimiento": "1969-09-14"
+    }
+  },
+  {
+    "model": "peliculas.director",
+    "pk": 4,
+    "fields": {
+      "nombre": "Greta Gerwig",
+      "nacionalidad": "Estadounidense",
+      "fecha_nacimiento": "1983-08-04"
+    }
+  },
+  {
+    "model": "peliculas.director",
+    "pk": 5,
+    "fields": {
+      "nombre": "Alfonso Cuarón",
+      "nacionalidad": "Mexicana",
+      "fecha_nacimiento": "1961-11-28"
+    }
+  },
+  {
+    "model": "peliculas.pelicula",
+    "pk": 1,
+    "fields": {
+      "titulo": "El origen",
+      "director": 1,
+      "sinopsis": "Un ladrón que roba secretos entrando en los sueños de las personas recibe un último encargo: implantar una idea.",
+      "anio": 2010,
+      "duracion": 148,
+      "genero": "ciencia_ficcion",
+      "imagen": "",
+      "calificacion_promedio": 0,
+      "visualizaciones": 0
+    }
+  },
+  {
+    "model": "peliculas.pelicula",
+    "pk": 2,
+    "fields": {
+      "titulo": "Interestelar",
+      "director": 1,
+      "sinopsis": "Un grupo de astronautas viaja a través de un agujero de gusano buscando un nuevo hogar para la humanidad.",
+      "anio": 2014,
+      "duracion": 169,
+      "genero": "ciencia_ficcion",
+      "imagen": "",
+      "calificacion_promedio": 0,
+      "visualizaciones": 0
+    }
+  },
+  {
+    "model": "peliculas.pelicula",
+    "pk": 3,
+    "fields": {
+      "titulo": "Batman: El caballero de la noche",
+      "director": 1,
+      "sinopsis": "Batman enfrenta al Joker, un criminal que quiere sumir a Ciudad Gótica en el caos.",
+      "anio": 2008,
+      "duracion": 152,
+      "genero": "accion",
+      "imagen": "",
+      "calificacion_promedio": 0,
+      "visualizaciones": 0
+    }
+  },
+  {
+    "model": "peliculas.pelicula",
+    "pk": 4,
+    "fields": {
+      "titulo": "El viaje de Chihiro",
+      "director": 2,
+      "sinopsis": "Una niña queda atrapada en un mundo de espíritus y debe trabajar en una casa de baños para salvar a sus padres.",
+      "anio": 2001,
+      "duracion": 125,
+      "genero": "animacion",
+      "imagen": "",
+      "calificacion_promedio": 0,
+      "visualizaciones": 0
+    }
+  },
+  {
+    "model": "peliculas.pelicula",
+    "pk": 5,
+    "fields": {
+      "titulo": "Mi vecino Totoro",
+      "director": 2,
+      "sinopsis": "Dos hermanas que se mudan al campo descubren a Totoro, un espíritu del bosque.",
+      "anio": 1988,
+      "duracion": 86,
+      "genero": "animacion",
+      "imagen": "",
+      "calificacion_promedio": 0,
+      "visualizaciones": 0
+    }
+  },
+  {
+    "model": "peliculas.pelicula",
+    "pk": 6,
+    "fields": {
+      "titulo": "Parásitos",
+      "director": 3,
+      "sinopsis": "Una familia pobre se infiltra, uno a uno, como empleados en la casa de una familia rica.",
+      "anio": 2019,
+      "duracion": 132,
+      "genero": "drama",
+      "imagen": "",
+      "calificacion_promedio": 0,
+      "visualizaciones": 0
+    }
+  },
+  {
+    "model": "peliculas.pelicula",
+    "pk": 7,
+    "fields": {
+      "titulo": "Lady Bird",
+      "director": 4,
+      "sinopsis": "Una joven de Sacramento vive su último año de colegio y una relación complicada con su madre.",
+      "anio": 2017,
+      "duracion": 94,
+      "genero": "comedia",
+      "imagen": "",
+      "calificacion_promedio": 0,
+      "visualizaciones": 0
+    }
+  },
+  {
+    "model": "peliculas.pelicula",
+    "pk": 8,
+    "fields": {
+      "titulo": "Barbie",
+      "director": 4,
+      "sinopsis": "Barbie sale de Barbieland hacia el mundo real y descubre quién quiere ser.",
+      "anio": 2023,
+      "duracion": 114,
+      "genero": "comedia",
+      "imagen": "",
+      "calificacion_promedio": 0,
+      "visualizaciones": 0
+    }
+  },
+  {
+    "model": "peliculas.pelicula",
+    "pk": 9,
+    "fields": {
+      "titulo": "Roma",
+      "director": 5,
+      "sinopsis": "La vida de Cleo, empleada doméstica de una familia de clase media en la Ciudad de México de los años 70.",
+      "anio": 2018,
+      "duracion": 135,
+      "genero": "drama",
+      "imagen": "",
+      "calificacion_promedio": 0,
+      "visualizaciones": 0
+    }
+  },
+  {
+    "model": "peliculas.pelicula",
+    "pk": 10,
+    "fields": {
+      "titulo": "Gravedad",
+      "director": 5,
+      "sinopsis": "Dos astronautas quedan a la deriva en el espacio tras la destrucción de su transbordador.",
+      "anio": 2013,
+      "duracion": 91,
+      "genero": "ciencia_ficcion",
+      "imagen": "",
+      "calificacion_promedio": 0,
+      "visualizaciones": 0
+    }
+  },
+  {
+    "model": "peliculas.actor",
+    "pk": 1,
+    "fields": {
+      "nombre": "Michael Caine",
+      "fecha_nacimiento": "1933-03-14",
+      "peliculas": [
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "model": "peliculas.actor",
+    "pk": 2,
+    "fields": {
+      "nombre": "Leonardo DiCaprio",
+      "fecha_nacimiento": "1974-11-11",
+      "peliculas": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "peliculas.actor",
+    "pk": 3,
+    "fields": {
+      "nombre": "Matthew McConaughey",
+      "fecha_nacimiento": "1969-11-04",
+      "peliculas": [
+        2
+      ]
+    }
+  },
+  {
+    "model": "peliculas.actor",
+    "pk": 4,
+    "fields": {
+      "nombre": "Christian Bale",
+      "fecha_nacimiento": "1974-01-30",
+      "peliculas": [
+        3
+      ]
+    }
+  },
+  {
+    "model": "peliculas.actor",
+    "pk": 5,
+    "fields": {
+      "nombre": "Song Kang-ho",
+      "fecha_nacimiento": "1967-01-17",
+      "peliculas": [
+        6
+      ]
+    }
+  },
+  {
+    "model": "peliculas.actor",
+    "pk": 6,
+    "fields": {
+      "nombre": "Saoirse Ronan",
+      "fecha_nacimiento": "1994-04-12",
+      "peliculas": [
+        7
+      ]
+    }
+  },
+  {
+    "model": "peliculas.actor",
+    "pk": 7,
+    "fields": {
+      "nombre": "Margot Robbie",
+      "fecha_nacimiento": "1990-07-02",
+      "peliculas": [
+        8
+      ]
+    }
+  },
+  {
+    "model": "peliculas.actor",
+    "pk": 8,
+    "fields": {
+      "nombre": "Sandra Bullock",
+      "fecha_nacimiento": "1964-07-26",
+      "peliculas": [
+        10
+      ]
+    }
+  }
+]
