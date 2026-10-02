@@ -22,4 +22,5 @@ urlpatterns = [
     path('listas/', views.mis_listas, name='mis_listas'),
     path('listas/nueva/', views.crear_lista, name='crear_lista'),
     path('listas/<int:pk>/', views.ver_lista, name='ver_lista'),
+    path('listas/<int:pk>/editar/', views.editar_lista, name='editar_lista'),
 ]
