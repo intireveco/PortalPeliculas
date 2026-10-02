@@ -1,0 +1,36 @@
+{% extends 'peliculas/base.html' %}
+{% block titulo %}Mi historial · Portal de Películas{% endblock %}
+
+{% block contenido %}
+<h1>Mi historial</h1>
+
+{% if registros %}
+    <div class="tabla-scroll">
+        <table>
+            <tr><th>Película</th><th>Fecha</th><th>Minutos</th><th>% visto</th></tr>
+            {% for registro in registros %}
+                <tr>
+                    <td><a href="{% url 'detalle_pelicula' registro.pelicula.pk %}">{{ registro.pelicula.titulo }}</a></td>
+                    <td>{{ registro.fecha|date:"d/m/Y H:i" }}</td>
+                    <td>{{ registro.minutos_visto }} / {{ registro.pelicula.duracion }}</td>
+                    <td>
+                        <div class="barra-progreso"><span style="width: {{ registro.porcentaje_visto }}%"></span></div>
+                        {{ registro.porcentaje_visto }}%
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% else %}
+    <p>Aún no has visto ninguna película. Entra a una y presiona "Guardar en mi historial".</p>
+{% endif %}
+
+{% if recomendadas %}
+    <h2>Te recomendamos (de directores que ya viste)</h2>
+    <div class="grilla">
+        {% for pelicula in recomendadas %}
+            {% include 'peliculas/_tarjeta.html' %}
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}
