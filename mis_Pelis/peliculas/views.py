@@ -185,3 +185,23 @@ def editar_lista(request, pk):
     else:
         form = ListaForm(instance=lista)  # formulario precargado con los datos actuales
     return render(request, 'peliculas/lista_form.html', {'form': form, 'titulo': 'Editar lista'})
+
+
+@login_required
+def eliminar_lista(request, pk):
+    # DELETE: primero pide confirmación (GET) y luego borra (POST)
+    lista = get_object_or_404(ListaPersonalizada, pk=pk, usuario=request.user)
+    if request.method == 'POST':
+        nombre = lista.nombre
+        try:
+            lista.delete()
+            messages.success(request, f'Lista "{nombre}" eliminada.')
+        except DatabaseError:
+            messages.error(request, 'No se pudo eliminar la lista. Intenta de nuevo.')
+        return redirect('mis_listas')
+    return render(request, 'peliculas/lista_confirmar_eliminar.html', {'lista': lista})
+
+
+def listas_publicas(request):
+    listas = ListaPersonalizada.objects.filter(publica=True).select_related('usuario')
+    return render(request, 'peliculas/listas_publicas.html', {'listas': listas})
