@@ -1,0 +1,15 @@
+{% extends 'peliculas/base.html' %}
+{% block titulo %}{{ titulo }} · Portal de Películas{% endblock %}
+
+{% block contenido %}
+<div class="caja-formulario">
+    {# El mismo formulario sirve para CREAR y para EDITAR #}
+    <h1>{{ titulo }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="boton">Guardar</button>
+        <a href="{% url 'mis_listas' %}">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

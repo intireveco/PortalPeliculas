@@ -1,0 +1,76 @@
+{% extends 'peliculas/base.html' %}
+{% block titulo %}{{ pelicula.titulo }} · Portal de Películas{% endblock %}
+
+{% block contenido %}
+<section class="detalle">
+    {% if pelicula.imagen %}
+        <img class="poster" src="{{ pelicula.imagen }}" alt="Póster de {{ pelicula.titulo }}">
+    {% else %}
+        <div class="poster sin-imagen">{{ pelicula.titulo }}</div>
+    {% endif %}
+
+    <div>
+        <h1>{{ pelicula.titulo }} <small>({{ pelicula.anio }})</small></h1>
+        <p><strong>Director:</strong> {{ pelicula.director.nombre }} ({{ pelicula.director.nacionalidad }})</p>
+        <p><strong>Género:</strong> {{ pelicula.get_genero_display }} · <strong>Duración:</strong> {{ pelicula.duracion }} min</p>
+        <p><strong>Promedio:</strong> ★ {{ pelicula.calificacion_promedio|floatformat:1 }} · <strong>Visualizaciones:</strong> {{ pelicula.visualizaciones }}</p>
+        {% if pelicula.actores.all %}
+            <p><strong>Actores:</strong> {{ pelicula.actores.all|join:", " }}</p>
+        {% endif %}
+        <p>{{ pelicula.sinopsis|default:"Sin sinopsis." }}</p>
+
+        {% if user.is_authenticated %}
+            {# Registrar visualización ("play") #}
+            <form method="post" action="{% url 'registrar_visualizacion' pelicula.pk %}" class="caja">
+                {% csrf_token %}
+                <h3>▶ Registrar que la viste</h3>
+                <label for="id_minutos_visto">¿Cuántos minutos viste?</label>
+                <input type="number" name="minutos_visto" id="id_minutos_visto" min="1" max="{{ pelicula.duracion }}" value="{{ pelicula.duracion }}" required>
+                <button type="submit" class="boton">Guardar en mi historial</button>
+            </form>
+        {% else %}
+            <p><a href="{% url 'login' %}?next={{ request.path }}">Ingresa</a> para calificar y guardar tu historial.</p>
+        {% endif %}
+    </div>
+</section>
+
+<section>
+    <h2>Calificaciones</h2>
+
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'calificar' pelicula.pk %}" class="caja">
+            {% csrf_token %}
+            <h3>{% if mi_calificacion %}Editar mi calificación{% else %}Calificar esta película{% endif %}</h3>
+            {{ form_calificacion.as_p }}
+            <button type="submit" class="boton">Guardar calificación</button>
+        </form>
+        {% if mi_calificacion %}
+            <form method="post" action="{% url 'eliminar_calificacion' pelicula.pk %}" onsubmit="return confirm('¿Eliminar tu calificación?');">
+                {% csrf_token %}
+                <button type="submit" class="boton boton-peligro">Eliminar mi calificación</button>
+            </form>
+        {% endif %}
+    {% endif %}
+
+    {% for calificacion in calificaciones %}
+        <div class="comentario">
+            <strong>{{ calificacion.usuario.username }}</strong> · {{ calificacion.puntuacion }} ★
+            <small>{{ calificacion.fecha|date:"d/m/Y" }}</small>
+            {% if calificacion.comentario %}<p>{{ calificacion.comentario }}</p>{% endif %}
+        </div>
+    {% empty %}
+        <p>Nadie ha calificado esta película todavía.</p>
+    {% endfor %}
+</section>
+
+{% if mas_del_director %}
+<section>
+    <h2>Más de {{ pelicula.director.nombre }}</h2>
+    <div class="grilla">
+        {% for pelicula in mas_del_director %}
+            {% include 'peliculas/_tarjeta.html' %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}

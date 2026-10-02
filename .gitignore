@@ -1,4 +1,17 @@
+# Variables de entorno (contraseñas): NUNCA se suben a GitHub
 .env
+
+# Entorno virtual de Python
 venv/
+.venv/
+
+# Archivos que Python genera solo
 __pycache__/
 *.pyc
+
+# Bases de datos locales (usamos Supabase)
+*.sqlite3
+
+# Configuración del editor
+.vscode/
+.idea/
