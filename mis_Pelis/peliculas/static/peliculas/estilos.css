@@ -1,122 +1,779 @@
-/* Estilos del Portal de Películas
-   Mobile-first: primero se diseña para celular y luego se agranda
-   con @media para tablet y computador. */
+/* ==========================================================================
+   CineTRACK - Hoja de Estilos Cinematográfica (estilos.css)
+   Compatible 100% con Django Templates y vistas existentes
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --fondo: #141414;
-    --tarjeta: #1f1f1f;
-    --texto: #f2f2f2;
-    --suave: #a3a3a3;
-    --rojo: #e50914;
-    --verde: #2e7d32;
+  /* Paleta Cinematic Obsidian */
+  --bg-main: #0c0e14;
+  --bg-surface: #111319;
+  --bg-card: #161822;
+  --bg-card-hover: #1e212f;
+  --bg-input: #191c26;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(255, 46, 85, 0.5);
+
+  /* Acentos de Color */
+  --rojo: #ff2e55;
+  --rojo-glow: rgba(255, 46, 85, 0.25);
+  --rojo-hover: #e02447;
+  --amarillo: #ffb800;
+  --verde: #00d26a;
+  --azul: #3a86ff;
+
+  /* Tipografía & Textos */
+  --texto: #f3f4f6;
+  --texto-muted: #9ca3af;
+  --texto-dim: #6b7280;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+  
+  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 20px rgba(255, 46, 85, 0.35);
+  --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-* { box-sizing: border-box; }
+/* Reset & Tipografía Global */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: var(--fondo);
-    color: var(--texto);
-    line-height: 1.5;
+  background-color: var(--bg-main);
+  color: var(--texto);
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
 }
 
-a { color: var(--texto); }
-img { max-width: 100%; display: block; }
-h1, h2 { margin-top: 0.5rem; }
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: var(--transition);
+}
 
-/* ---------- Barra superior ---------- */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ---------- Barra Superior (Header & Navigation) ---------- */
 .barra {
-    display: flex;
-    flex-direction: column;   /* en celular: todo en columna */
-    gap: 0.6rem;
-    padding: 0.8rem 1rem;
-    background: #000;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(12, 14, 20, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 0.85rem 1.5rem;
 }
-.logo { color: var(--rojo); font-weight: bold; font-size: 1.4rem; text-decoration: none; }
-.menu { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; }
-.menu a { text-decoration: none; color: var(--suave); }
-.menu a:hover { color: var(--texto); }
-.en-linea { display: inline; margin: 0; }
-.buscador { display: flex; gap: 0.4rem; }
-.buscador input { flex: 1; }
 
-/* ---------- Botones y formularios ---------- */
-.boton, button {
-    display: inline-block;
-    background: var(--rojo);
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 0.45rem 0.9rem;
-    text-decoration: none;
-    cursor: pointer;
-    font-size: 0.95rem;
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #ffffff;
 }
-.boton-peligro { background: #7a0000; }
-.boton-link { background: none; color: var(--suave); padding: 0; }
+
+.logo span {
+  color: var(--rojo);
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.menu a {
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--texto-muted);
+  transition: var(--transition);
+}
+
+.menu a:hover, .menu a.activo {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.menu a.activo {
+  background: var(--rojo);
+  color: #fff;
+  box-shadow: 0 0 14px var(--rojo-glow);
+}
+
+.menu .usuario-tag {
+  font-size: 0.85rem;
+  color: var(--texto-muted);
+  padding: 0.3rem 0.6rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+.buscador {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.buscador input {
+  width: 100%;
+  padding: 0.55rem 1rem 0.55rem 2.4rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.88rem;
+  transition: var(--transition);
+}
+
+.buscador input:focus {
+  outline: none;
+  border-color: var(--rojo);
+  box-shadow: 0 0 0 3px var(--rojo-glow);
+}
+
+.buscador::before {
+  content: "🔍";
+  position: absolute;
+  left: 0.85rem;
+  font-size: 0.8rem;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.buscador .boton {
+  display: none; /* En pantallas medianas/grandes el submit es vía enter */
+}
+
+/* ---------- Botones & Controles ---------- */
+.boton, button[type="submit"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: var(--rojo);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.55rem 1.25rem;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px var(--rojo-glow);
+  transition: var(--transition);
+}
+
+.boton:hover, button[type="submit"]:hover {
+  background: var(--rojo-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(255, 46, 85, 0.4);
+}
+
+.boton-secundario {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  box-shadow: none;
+  border: 1px solid var(--border-subtle);
+}
+
+.boton-secundario:hover {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: none;
+}
+
+.boton-peligro {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  box-shadow: none;
+}
+
+.boton-peligro:hover {
+  background: #dc2626;
+  color: #fff;
+}
+
+.boton-link {
+  background: none;
+  border: none;
+  color: var(--texto-muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.6rem;
+  transition: var(--transition);
+}
+
+.boton-link:hover {
+  color: var(--rojo);
+}
+
+/* ---------- Layout de Contenido Principal ---------- */
+.contenido {
+  flex: 1;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+/* Titulares & Badges */
+h1 {
+  font-size: 1.85rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+h2 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 2rem 0 1rem;
+  letter-spacing: -0.3px;
+}
+
+.etiqueta {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+  background: rgba(255, 46, 85, 0.15);
+  color: var(--rojo);
+  border: 1px solid rgba(255, 46, 85, 0.25);
+}
+
+.etiqueta-privada {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--texto-muted);
+  border-color: var(--border-subtle);
+}
+
+/* Notificaciones / Messages */
+.mensaje {
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.25rem;
+  font-size: 0.92rem;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+}
+
+.mensaje-success {
+  background: rgba(0, 210, 106, 0.12);
+  border-color: rgba(0, 210, 106, 0.3);
+  color: #34d399;
+}
+
+.mensaje-error {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+/* ---------- Tarjetas de Película (Grilla) ---------- */
+.grilla {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.tarjeta {
+  position: relative;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.tarjeta:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 46, 85, 0.4);
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.8);
+}
+
+.tarjeta-poster-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background: #111319;
+}
+
+.tarjeta-poster-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.tarjeta:hover .tarjeta-poster-wrap img {
+  transform: scale(1.05);
+}
+
+.sin-imagen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  background: radial-gradient(circle at center, #261017 0%, #111319 100%);
+  color: var(--texto-muted);
+}
+
+/* Badges sobre la tarjeta */
+.tarjeta-rating {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  background: rgba(12, 14, 20, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--amarillo);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  z-index: 2;
+}
+
+.tarjeta-texto {
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  background: var(--bg-card);
+}
+
+.tarjeta-texto strong {
+  font-size: 0.95rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+}
+
+.tarjeta-meta {
+  font-size: 0.8rem;
+  color: var(--texto-muted);
+}
+
+.tarjeta-stats {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.78rem;
+  color: var(--texto-dim);
+  margin-top: 0.35rem;
+}
+
+/* Paginación */
+.paginacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.25rem;
+  margin: 2.5rem 0 1rem;
+}
+
+.paginacion span {
+  font-size: 0.9rem;
+  color: var(--texto-muted);
+}
+
+/* ---------- Vista Detalle de Película ---------- */
+.detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.poster-col {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.poster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.7);
+  border: 1px solid var(--border-subtle);
+}
+
+.detalle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.detalle-info h1 {
+  font-size: 2.1rem;
+  margin-bottom: 0.2rem;
+}
+
+.detalle-info h1 small {
+  color: var(--texto-muted);
+  font-weight: 400;
+  font-size: 1.3rem;
+}
+
+.meta-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.meta-chip {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+}
+
+.sinopsis {
+  color: #d1d5db;
+  font-size: 1rem;
+  line-height: 1.7;
+  margin: 0.75rem 0;
+}
+
+/* Cajas & Formularios */
+.caja {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.caja-formulario {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  max-width: 520px;
+  margin: 2rem auto;
+  box-shadow: var(--shadow-card);
+}
+
+.caja-formulario form p {
+  margin-bottom: 1.1rem;
+}
+
+.caja-formulario label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  color: var(--texto-muted);
+}
+
 input, select, textarea {
-    width: 100%;
-    padding: 0.45rem;
-    border-radius: 4px;
-    border: 1px solid #444;
-    background: #2a2a2a;
-    color: var(--texto);
-}
-input[type="checkbox"] { width: auto; }
-.helptext, .errorlist { font-size: 0.85rem; color: var(--suave); }
-.errorlist { color: #ff8a80; padding-left: 1rem; }
-
-/* ---------- Contenido ---------- */
-.contenido { padding: 1rem; max-width: 1100px; margin: 0 auto; }
-.caja { background: var(--tarjeta); padding: 1rem; border-radius: 6px; margin-bottom: 1rem; }
-.caja-formulario { background: var(--tarjeta); padding: 1.2rem; border-radius: 6px; max-width: 480px; margin: 1rem auto; }
-.mensaje { padding: 0.7rem 1rem; border-radius: 4px; margin-bottom: 1rem; background: #333; }
-.mensaje-success { background: var(--verde); }
-.mensaje-error { background: #b71c1c; }
-.etiqueta { font-size: 0.75rem; background: #333; padding: 0.1rem 0.5rem; border-radius: 10px; margin: 0 0.4rem; }
-.titulo-con-boton, .fila-lista { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem; }
-
-/* ---------- Grilla de tarjetas ---------- */
-.grilla { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
-.tarjeta { background: var(--tarjeta); border-radius: 6px; overflow: hidden; text-decoration: none; transition: transform 0.2s; }
-.tarjeta:hover { transform: scale(1.03); }
-.tarjeta img, .sin-imagen { width: 100%; aspect-ratio: 2 / 3; object-fit: cover; }
-.sin-imagen { display: flex; align-items: center; justify-content: center; text-align: center; padding: 0.5rem; background: linear-gradient(135deg, #3a0d0d, #1f1f1f); font-weight: bold; }
-.tarjeta-texto { display: flex; flex-direction: column; padding: 0.5rem; font-size: 0.85rem; }
-.tarjeta-texto span { color: var(--suave); }
-
-.paginacion { display: flex; justify-content: center; align-items: center; gap: 1rem; margin: 1.5rem 0; }
-
-/* ---------- Detalle ---------- */
-.detalle { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
-.poster { width: 100%; max-width: 280px; border-radius: 6px; }
-.comentario { border-bottom: 1px solid #333; padding: 0.6rem 0; }
-.comentario p { margin: 0.3rem 0 0; }
-
-/* ---------- Tablas, ranking y filtros ---------- */
-.tabla-scroll { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; }
-th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #333; }
-.barra-progreso { background: #333; height: 6px; border-radius: 3px; overflow: hidden; }
-.barra-progreso span { display: block; height: 100%; background: var(--rojo); }
-.ranking li { margin-bottom: 0.4rem; }
-.filtros { display: flex; flex-direction: column; gap: 0.5rem; }
-.dos-columnas { display: grid; gap: 1rem; }
-
-.pie { text-align: center; color: var(--suave); padding: 2rem 1rem; font-size: 0.8rem; }
-
-/* ---------- Tablet (desde 600px) ---------- */
-@media (min-width: 600px) {
-    .grilla { grid-template-columns: repeat(3, 1fr); }
-    .detalle { flex-direction: row; }
-    .filtros { flex-direction: row; }
-    .dos-columnas { grid-template-columns: 1fr 1fr; }
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.92rem;
+  transition: var(--transition);
 }
 
-/* ---------- Computador (desde 900px) ---------- */
-@media (min-width: 900px) {
-    .barra { flex-direction: row; align-items: center; justify-content: space-between; }
-    .grilla { grid-template-columns: repeat(4, 1fr); }
-    .buscador { min-width: 300px; }
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--rojo);
+  box-shadow: 0 0 0 3px var(--rojo-glow);
+}
+
+/* Comentarios / Reseñas */
+.comentario {
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.comentario-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.comentario strong {
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.comentario-rating {
+  color: var(--amarillo);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.comentario small {
+  color: var(--texto-dim);
+}
+
+/* ---------- Tablas & Métricas de Historial ---------- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.stat-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--texto-dim);
+  font-weight: 600;
+}
+
+.stat-val {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.stat-desc {
+  font-size: 0.8rem;
+  color: var(--texto-muted);
+}
+
+.tabla-scroll {
+  overflow-x: auto;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--texto-dim);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  padding: 0.85rem 1.1rem;
+  text-align: left;
+}
+
+td {
+  padding: 0.85rem 1.1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.9rem;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.barra-progreso {
+  background: rgba(255, 255, 255, 0.08);
+  height: 6px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+}
+
+.barra-progreso span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #ff2e55, #ff758f);
+  border-radius: var(--radius-full);
+}
+
+/* ---------- Top 10 Ranking ---------- */
+.dos-columnas {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.ranking {
+  list-style: none;
+  counter-reset: rank-counter;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ranking li {
+  counter-increment: rank-counter;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem 0.85rem 3.2rem;
+  position: relative;
+  font-size: 0.95rem;
+  transition: var(--transition);
+}
+
+.ranking li::before {
+  content: "#" counter(rank-counter);
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--texto-dim);
+}
+
+.ranking li:nth-child(1)::before { color: #ffd700; font-size: 1.25rem; }
+.ranking li:nth-child(2)::before { color: #c0c0c0; }
+.ranking li:nth-child(3)::before { color: #cd7f32; }
+
+.ranking li:hover {
+  border-color: rgba(255, 46, 85, 0.4);
+  transform: translateX(4px);
+}
+
+.ranking a {
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Listas de Usuario */
+.fila-lista {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.85rem;
+}
+
+.titulo-con-boton {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Footer */
+.pie {
+  margin-top: auto;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--texto-dim);
+  font-size: 0.82rem;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+}
+
+/* Responsive Breakpoints */
+@media (min-width: 640px) {
+  .grilla {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .filtros {
+    flex-direction: row;
+  }
+}
+
+@media (min-width: 860px) {
+  .barra {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 2rem;
+  }
+  .buscador {
+    max-width: 320px;
+  }
+  .detalle {
+    flex-direction: row;
+    padding: 2.25rem;
+  }
+  .poster-col {
+    width: 280px;
+    flex-shrink: 0;
+  }
+  .dos-columnas {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1100px) {
+  .grilla {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
 }

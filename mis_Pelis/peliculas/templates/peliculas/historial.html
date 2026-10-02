@@ -1,36 +1,79 @@
+
 {% extends 'peliculas/base.html' %}
-{% block titulo %}Mi historial · Portal de Películas{% endblock %}
+{% block titulo %}Mi Historial · CineTRACK{% endblock %}
 
 {% block contenido %}
-<h1>Mi historial</h1>
+<div class="titulo-con-boton">
+    <div>
+        <span class="etiqueta" style="margin-bottom: 0.4rem;">REGISTRO DE ACTIVIDAD</span>
+        <h1 style="margin-bottom: 0;">Mi Historial de Películas</h1>
+    </div>
+</div>
 
 {% if registros %}
+    <!-- Tarjetas de Métricas Cinéfilas -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-label">Metraje Total</span>
+            <span class="stat-val">{{ registros|length }}</span>
+            <span class="stat-desc">Películas registradas</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Estado</span>
+            <span class="stat-val" style="color: var(--verde);">Activo</span>
+            <span class="stat-desc">Sincronizado con Supabase</span>
+        </div>
+    </div>
+
+    <!-- Tabla Cronológica -->
     <div class="tabla-scroll">
         <table>
-            <tr><th>Película</th><th>Fecha</th><th>Minutos</th><th>% visto</th></tr>
-            {% for registro in registros %}
+            <thead>
                 <tr>
-                    <td><a href="{% url 'detalle_pelicula' registro.pelicula.pk %}">{{ registro.pelicula.titulo }}</a></td>
-                    <td>{{ registro.fecha|date:"d/m/Y H:i" }}</td>
-                    <td>{{ registro.minutos_visto }} / {{ registro.pelicula.duracion }}</td>
-                    <td>
-                        <div class="barra-progreso"><span style="width: {{ registro.porcentaje_visto }}%"></span></div>
-                        {{ registro.porcentaje_visto }}%
-                    </td>
+                    <th>Película</th>
+                    <th>Fecha de Registro</th>
+                    <th>Minutos Vistos</th>
+                    <th>Progreso</th>
                 </tr>
-            {% endfor %}
+            </thead>
+            <tbody>
+                {% for registro in registros %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'detalle_pelicula' registro.pelicula.pk %}" style="font-weight: 700; color: #fff;">
+                                {{ registro.pelicula.titulo }}
+                            </a>
+                        </td>
+                        <td style="color: var(--texto-muted);">{{ registro.fecha|date:"d/m/Y H:i" }}</td>
+                        <td>{{ registro.minutos_visto }} / {{ registro.pelicula.duracion }} min</td>
+                        <td style="min-width: 140px;">
+                            <div class="barra-progreso">
+                                <span style="width: {{ registro.porcentaje_visto }}%"></span>
+                            </div>
+                            <span style="font-size: 0.8rem; font-weight: 600; color: var(--rojo);">{{ registro.porcentaje_visto }}% visto</span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
 {% else %}
-    <p>Aún no has visto ninguna película. Entra a una y presiona "Guardar en mi historial".</p>
+    <div class="caja" style="text-align: center; padding: 3rem 1.5rem;">
+        <p style="font-size: 1.1rem; color: var(--texto-muted); margin-bottom: 1.25rem;">
+            Aún no has registrado ninguna película en tu historial.
+        </p>
+        <a class="boton" href="{% url 'catalogo' %}">Explorar el catálogo</a>
+    </div>
 {% endif %}
 
 {% if recomendadas %}
-    <h2>Te recomendamos (de directores que ya viste)</h2>
-    <div class="grilla">
-        {% for pelicula in recomendadas %}
-            {% include 'peliculas/_tarjeta.html' %}
-        {% endfor %}
-    </div>
+    <section style="margin-top: 2.5rem;">
+        <h2>Te recomendamos (de directores que ya viste)</h2>
+        <div class="grilla">
+            {% for pelicula in recomendadas %}
+                {% include 'peliculas/_tarjeta.html' %}
+            {% endfor %}
+        </div>
+    </section>
 {% endif %}
 {% endblock %}

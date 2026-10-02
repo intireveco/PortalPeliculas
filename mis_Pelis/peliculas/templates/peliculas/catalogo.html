@@ -1,8 +1,14 @@
+
 {% extends 'peliculas/base.html' %}
-{% block titulo %}Catálogo · Portal de Películas{% endblock %}
+{% block titulo %}Catálogo de Películas · CineTRACK{% endblock %}
 
 {% block contenido %}
-<h1>Catálogo</h1>
+<div class="titulo-con-boton">
+    <div>
+        <span class="etiqueta" style="margin-bottom: 0.4rem;">EXPLORAR METRAJE</span>
+        <h1 style="margin-bottom: 0;">Catálogo de Películas</h1>
+    </div>
+</div>
 
 {% if pagina %}
     <div class="grilla">
@@ -14,14 +20,19 @@
     {# Paginación: 8 películas por página #}
     <div class="paginacion">
         {% if pagina.has_previous %}
-            <a class="boton" href="?page={{ pagina.previous_page_number }}">« Anterior</a>
+            <a class="boton boton-secundario" href="?page={{ pagina.previous_page_number }}">« Anterior</a>
         {% endif %}
         <span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
         {% if pagina.has_next %}
-            <a class="boton" href="?page={{ pagina.next_page_number }}">Siguiente »</a>
+            <a class="boton boton-secundario" href="?page={{ pagina.next_page_number }}">Siguiente »</a>
         {% endif %}
     </div>
 {% else %}
-    <p>Aún no hay películas. Agrégalas desde el panel de administración.</p>
+    <div class="caja" style="text-align: center; padding: 3rem 1.5rem;">
+        <p style="font-size: 1.1rem; color: var(--texto-muted); margin-bottom: 1.25rem;">Aún no hay películas en el catálogo.</p>
+        {% if user.is_staff %}
+            <a class="boton" href="{% url 'admin:peliculas_importar_omdb' %}">Importar desde OMDb</a>
+        {% endif %}
+    </div>
 {% endif %}
 {% endblock %}

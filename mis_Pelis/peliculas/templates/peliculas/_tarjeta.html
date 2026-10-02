@@ -1,13 +1,31 @@
-{# Tarjeta de una película. Se reutiliza con: {% include 'peliculas/_tarjeta.html' %} #}
+
+{# Tarjeta de película CineTRACK #}
+{# Se reutiliza en el catálogo, listas y recomendaciones con: {% include 'peliculas/_tarjeta.html' %} #}
 <a class="tarjeta" href="{% url 'detalle_pelicula' pelicula.pk %}">
-    {% if pelicula.imagen %}
-        <img src="{{ pelicula.imagen }}" alt="Póster de {{ pelicula.titulo }}">
-    {% else %}
-        <div class="sin-imagen">{{ pelicula.titulo }}</div>
-    {% endif %}
+    <div class="tarjeta-poster-wrap">
+        {% if pelicula.imagen %}
+            <img src="{{ pelicula.imagen }}" alt="Póster de {{ pelicula.titulo }}" loading="lazy">
+        {% else %}
+            <div class="sin-imagen">
+                <span>{{ pelicula.titulo }}</span>
+            </div>
+        {% endif %}
+
+        {% if pelicula.calificacion_promedio > 0 %}
+            <div class="tarjeta-rating">
+                <span>★</span> {{ pelicula.calificacion_promedio|floatformat:1 }}
+            </div>
+        {% endif %}
+    </div>
+
     <div class="tarjeta-texto">
         <strong>{{ pelicula.titulo }}</strong>
-        <span>{{ pelicula.anio }} · {{ pelicula.get_genero_display }}</span>
-        <span>★ {{ pelicula.calificacion_promedio|floatformat:1 }} · 👁 {{ pelicula.visualizaciones }}</span>
+        <span class="tarjeta-meta">{{ pelicula.anio }} · {{ pelicula.get_genero_display }}</span>
+        <div class="tarjeta-stats">
+            <span>👁 {{ pelicula.visualizaciones }} vista{{ pelicula.visualizaciones|pluralize }}</span>
+            {% if pelicula.duracion %}
+                <span>· {{ pelicula.duracion }}m</span>
+            {% endif %}
+        </div>
     </div>
 </a>

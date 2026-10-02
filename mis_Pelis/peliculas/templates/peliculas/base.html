@@ -3,31 +3,50 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block titulo %}CineTRACK{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}CineTRACK · Streaming & Film Archive{% endblock %}</title>
+    
+    <!-- Metadatos de Color y PWA -->
+    <meta name="theme-color" content="#ff2e55">
+    <link rel="icon" type="image/png" href="{% static 'peliculas/icons/favicon.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'peliculas/icons/apple-touch-icon.png' %}">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    
+    <!-- Fuentes y Hoja de Estilos Cinematográfica -->
     <link rel="stylesheet" href="{% static 'peliculas/estilos.css' %}">
 </head>
 <body>
     <header class="barra">
-        <a class="logo" href="{% url 'catalogo' %}">CineTRACK</a>
+        <a class="logo" href="{% url 'catalogo' %}">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff2e55" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5"></rect>
+                <polygon points="10 8 16 12 10 16 10 8" fill="#ff2e55"></polygon>
+            </svg>
+            Cine<span>TRACK</span>
+        </a>
+
         <nav class="menu">
-            <a href="{% url 'catalogo' %}">Catálogo</a>
-            <a href="{% url 'top10' %}">Top 10</a>
-            <a href="{% url 'listas_publicas' %}">Listas públicas</a>
+            <a href="{% url 'catalogo' %}" class="{% if request.resolver_match.url_name == 'catalogo' %}activo{% endif %}">Catálogo</a>
+            <a href="{% url 'top10' %}" class="{% if request.resolver_match.url_name == 'top10' %}activo{% endif %}">Top 10</a>
+            <a href="{% url 'listas_publicas' %}" class="{% if request.resolver_match.url_name == 'listas_publicas' %}activo{% endif %}">Listas públicas</a>
+
             {% if user.is_authenticated %}
-                <a href="{% url 'mis_listas' %}">Mis listas</a>
-                <a href="{% url 'historial' %}">Historial</a>
-                {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin</a>{% endif %}
-                {# Desde Django 5 el logout debe ser POST: por eso es un formulario #}
+                <a href="{% url 'mis_listas' %}" class="{% if request.resolver_match.url_name == 'mis_listas' %}activo{% endif %}">Mis listas</a>
+                <a href="{% url 'historial' %}" class="{% if request.resolver_match.url_name == 'historial' %}activo{% endif %}">Historial</a>
+                {% if user.is_staff %}
+                    <a href="{% url 'admin:index' %}">Admin</a>
+                {% endif %}
+                <span class="usuario-tag">👤 {{ user.username }}</span>
                 <form method="post" action="{% url 'logout' %}" class="en-linea">
                     {% csrf_token %}
-                    <button type="submit" class="boton-link">Salir ({{ user.username }})</button>
+                    <button type="submit" class="boton-link">Salir</button>
                 </form>
             {% else %}
                 <a href="{% url 'login' %}">Ingresar</a>
                 <a href="{% url 'registro' %}" class="boton">Registrarse</a>
             {% endif %}
         </nav>
+
         <form class="buscador" method="get" action="{% url 'buscar' %}">
             <input type="search" name="q" placeholder="Buscar película, director o actor..." value="{{ q|default:'' }}">
             <button type="submit" class="boton">Buscar</button>
@@ -44,6 +63,9 @@
         {% block contenido %}{% endblock %}
     </main>
 
-    <footer class="pie">Portal de CineTRACK · Programación Back End TI3V41</footer>
+    <footer class="pie">
+        <p><strong>CineTRACK</strong> · Plataforma Cinematográfica & Metraje</p>
+        <p style="margin-top: 0.35rem;">Programación Back End · Django & Supabase</p>
+    </footer>
 </body>
 </html>

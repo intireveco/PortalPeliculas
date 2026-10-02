@@ -1,28 +1,56 @@
+
 {% extends 'peliculas/base.html' %}
-{% block titulo %}Top 10 · Portal de Películas{% endblock %}
+{% block titulo %}Top 10 · CineTRACK{% endblock %}
 
 {% block contenido %}
-<h1>Top 10</h1>
+<div class="titulo-con-boton">
+    <div>
+        <span class="etiqueta" style="margin-bottom: 0.4rem;">RANKING DE LA COMUNIDAD</span>
+        <h1 style="margin-bottom: 0;">Top 10 Películas</h1>
+    </div>
+</div>
+
 <div class="dos-columnas">
-    <section>
-        <h2>Histórico</h2>
+    <section class="caja" style="background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-lg);">
+        <h2 style="margin-top: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🏆</span> Top Histórico
+        </h2>
+        <p style="font-size: 0.85rem; color: var(--texto-muted); margin-bottom: 1.25rem;">
+            El canon consagrado por calificaciones globales de la comunidad.
+        </p>
         <ol class="ranking">
             {% for pelicula in top_historico %}
-                <li><a href="{% url 'detalle_pelicula' pelicula.pk %}">{{ pelicula.titulo }}</a>
-                    — ★ {{ pelicula.calificacion_promedio|floatformat:1 }} ({{ pelicula.votos }} voto{{ pelicula.votos|pluralize }})</li>
+                <li>
+                    <a href="{% url 'detalle_pelicula' pelicula.pk %}">{{ pelicula.titulo }}</a>
+                    <div style="color: var(--texto-muted); font-size: 0.85rem; margin-top: 0.2rem;">
+                        <span style="color: var(--amarillo); font-weight: 700;">★ {{ pelicula.calificacion_promedio|floatformat:1 }}</span>
+                        <span>· {{ pelicula.votos }} voto{{ pelicula.votos|pluralize }}</span>
+                    </div>
+                </li>
             {% empty %}
-                <li>Aún no hay calificaciones.</li>
+                <li style="padding-left: 1rem;">Aún no hay calificaciones registradas.</li>
             {% endfor %}
         </ol>
     </section>
-    <section>
-        <h2>Últimos 30 días</h2>
+
+    <section class="caja" style="background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-lg);">
+        <h2 style="margin-top: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🔥</span> Últimos 30 días
+        </h2>
+        <p style="font-size: 0.85rem; color: var(--texto-muted); margin-bottom: 1.25rem;">
+            Las películas en tendencia y con mayor aceleración cinéfila este mes.
+        </p>
         <ol class="ranking">
             {% for pelicula in top_mes %}
-                <li><a href="{% url 'detalle_pelicula' pelicula.pk %}">{{ pelicula.titulo }}</a>
-                    — ★ {{ pelicula.promedio_mes|floatformat:1 }} ({{ pelicula.votos }} voto{{ pelicula.votos|pluralize }})</li>
+                <li>
+                    <a href="{% url 'detalle_pelicula' pelicula.pk %}">{{ pelicula.titulo }}</a>
+                    <div style="color: var(--texto-muted); font-size: 0.85rem; margin-top: 0.2rem;">
+                        <span style="color: var(--amarillo); font-weight: 700;">★ {{ pelicula.promedio_mes|floatformat:1 }}</span>
+                        <span>· {{ pelicula.votos }} voto{{ pelicula.votos|pluralize }}</span>
+                    </div>
+                </li>
             {% empty %}
-                <li>No hubo calificaciones este mes.</li>
+                <li style="padding-left: 1rem;">No hubo calificaciones este mes.</li>
             {% endfor %}
         </ol>
     </section>
