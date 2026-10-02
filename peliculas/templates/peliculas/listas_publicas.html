@@ -1,0 +1,14 @@
+{% extends 'peliculas/base.html' %}
+{% block titulo %}Listas públicas · Portal de Películas{% endblock %}
+
+{% block contenido %}
+<h1>Listas públicas</h1>
+{% for lista in listas %}
+    <div class="caja fila-lista">
+        <a href="{% url 'ver_lista' lista.pk %}"><strong>{{ lista.nombre }}</strong></a>
+        <small>de {{ lista.usuario.username }} · {{ lista.peliculas.count }} película{{ lista.peliculas.count|pluralize }}</small>
+    </div>
+{% empty %}
+    <p>Nadie ha compartido listas todavía.</p>
+{% endfor %}
+{% endblock %}
