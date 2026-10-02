@@ -6,6 +6,7 @@
     <h1>{{ lista.nombre }}</h1>
     {% if lista.usuario == user %}
         <div>
+            <a class="boton" href="{% url 'editar_lista' lista.pk %}">Editar</a>
         </div>
     {% endif %}
 </div>
