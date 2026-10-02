@@ -12,6 +12,7 @@
         <a class="logo" href="{% url 'catalogo' %}">🎬 PortalPelis</a>
         <nav class="menu">
             <a href="{% url 'catalogo' %}">Catálogo</a>
+            <a href="{% url 'listas_publicas' %}">Listas públicas</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'mis_listas' %}">Mis listas</a>
                 <a href="{% url 'historial' %}">Historial</a>
